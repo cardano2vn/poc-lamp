@@ -1,28 +1,7 @@
-"""
-POC-LAMP-Chip Raspberry Pi 4B_20241101
 
-Firmware: Bottom + 1, Top = Bottom + 4, tempadd = 1;
-Firmware: Limit minimum room temperature 10 degC;
-Firmware: ADC setGain(GAIN_ONE);
-Reaction teperature set for Sam, Camp: 67 degC and COV: 66 degC;
-Chip postion error <100;
-Reaction time set for COV, Sal: 50 min and Cam: 60 min;
-Start calculation time at 5 min;
-Base line at 8000 (rateLimit = 8000); Derivative at 350 (noiseThreshold = 350);
-
-Software define:
- WELL 1A, WELL 1B, WELL 2A, WELL 2B, WELL 3A, WELL 4A, WELL 1C, WELL 1D,  WELL 2C, WELL 2D, WELL 3D, WELL 4D
- well 1 , 2      , 3      , 4      , 5      , 6      , 7      , 8      , 9       , 10     , 11     , 12
-
-PCB design:
- LED     1 , 1      , 2      , 2      , 2      , 3      , 3      ,  3      , 4      , 4      , 3      ,  2
- WELL    4A, WELL 3A, WELL 2A, WELL 1A, WELL 1B, WELL 1C, WELL 1D,  WELL 2D, WELL 3D, WELL 4D, WELL 2C,  WELL 2B
- ADC No. 1 , 2      , 3      , 4      , 5      , 6      , 7      ,  8      , 9      , 10     , 11     ,  12
-	ads1-0 , ads1-1 , ads1-2 , ads1-3 , ads2-0 , ads2-1 , ads2-2 ,  ads2-3 , ads3-0 , ads3-1 , ads3-2 ,  ads3-3
-"""
+#POC-LAMP-Chip Raspberry Pi 4B_20241101
 
 import os, sys
-
 if sys.version_info[0] == 3:
     import tkinter as tk
     from tkinter import *
@@ -146,17 +125,6 @@ def on_entry_click(event):
 
 # Close the keyboard when the window is closed
 root.protocol("WM_DELETE_WINDOW", lambda: [close_keyboard(), root.destroy()])
-
-# Avoid close program by pressing 'X'
-#def disable_event():
-#    pass
-#root.protocol('WM_DELETE_WINDOW', disable_event)
-
-#im = Image.open('POC_LAMPIcon.png')
-#new_width  = 25
-#new_height = 20
-#im = im.resize((new_width, new_height), Image.ANTIALIAS)
-#im.save('POC_LAMPIcon.png')
 
 POC_LAMPIcon = tk.PhotoImage(file='POC_LAMPIcon.png')
 root.tk.call('wm', 'iconphoto', root._w, POC_LAMPIcon)
@@ -340,19 +308,6 @@ class GuiPart:
         self.entrybottomtemp = Entry(self.f6, width=14, bd=2)
         self.entrybottomtemp.grid(row=1, column=1, padx=5, pady=2)
 
-#        # Adding Menu
-#        menubar = Menu(self.master)
-#        self.master.config(menu=menubar)
-
-#        fileMenu = Menu(menubar, tearoff=0)
-#        fileMenu.add_command(label="Open Excel File", command=lambda: self.openFile())
-#        fileMenu.add_separator()
-#        fileMenu.add_command(label="Help", command=lambda: self.openManual())
-#        fileMenu.add_command(label="Quit", command=lambda: self.quit_program())
-#        fileMenu.add_separator()
-#        fileMenu.add_command(label="About App", command=lambda: self.show_owner())
-#        menubar.add_cascade(label="File", menu=fileMenu)
-
         # Scrollable Text Display
         self.scrollText = Scrollbar(master)
         self.scrollText.pack(side=RIGHT, fill=BOTH)
@@ -394,22 +349,6 @@ class GuiPart:
             os.popen(filename)
         except:
             mess.showerror("Open file error", "Do not have Microsoft Excel to run...")
-
-    # --------------------------------------------------------------------------------------
-    def openManual(self):
-        filePath = os.getcwd() + "\\KIT manual.txt"
-        os.popen(filePath)
-
-    # --------------------------------------------------------------------------------------
-    def quit_program(self):
-        GPIO.output(heaterSafe, GPIO.LOW)  # Set heaterSafe OFF
-        pwmt.start(0)  # Start Top heater with 0% duty cycle (off)
-        pwmb.start(0)  # Start Bottom heater with 0% duty cycle (off)
-        os._exit(0)
-
-    # --------------------------------------------------------------------------------------
-    def show_owner(self):
-        mess.showinfo("POC-LAMP APP ", "Written by Huynh Van Ngoc \n hvngocs@gmail.com")
 
     # --------------------------------------------------------------------------------------
     def processIncoming(self):
@@ -595,7 +534,7 @@ class ThreadedAction:
         self.gui.btReport.config(command=self.createFinalReport)
         self.gui.btFillData.config(command=self.fillData)
         self.gui.txtDisplay.config(state=NORMAL)
-        self.gui.btLocation.config(command=self.log_gps_datatest)
+        self.gui.btLocation.config(command=self.log_gps_data)
         self.gui.btSendRS.config(command=self.blockchainsend)
 
         # --- In active Results frame
@@ -605,10 +544,6 @@ class ThreadedAction:
         self.gui.btAbsFigs.config(state=DISABLED)
         self.gui.btReport.config(state=DISABLED)
         self.gui.btSendRS.config(state=DISABLED)
-
-        self.master.bind("<Control-Key-x>", self.quit)
-        self.master.bind("<Control-Key-o>", self.openFile)
-        self.master.bind("<Control-Key-h>", self.openManual)
 
         self.isFileOpen = False
         self.isModeSelected = False
@@ -770,7 +705,7 @@ class ThreadedAction:
         plt.pause(0.1)
         self.gui.txtDisplay.delete('1.0', END)
         self.gui.txtDisplay.insert(END, "Result have been sent to Blockchain")
-        
+
 # ------------------------------------------------------------------------------------
     def periodicCall(self):
         # Check every 100ms if there is something new in the queue
@@ -786,11 +721,7 @@ class ThreadedAction:
     # ------------------------------------------------------------------------------------
 
     def fillData(self):
-        # self.gui.createFillForm()
-        # print(self.samplesName)
-        # self.gui.fTopup.update()
-        # self.gui.fTopup.deiconify()
-        # del self.samplesName[:]
+
         self.fTopup = Toplevel()
         self.fTopup.title('Samples Name...')
         self.fTopup.tk.call('wm', 'iconphoto', self.fTopup._w, POC_LAMPIcon)
@@ -885,7 +816,6 @@ class ThreadedAction:
 
     def onBtCheckCustom(self):
         if self.gui.checkVar.get():
-            # if self.gui.checkVar.get()==1:
             self.gui.enRate.config(state=NORMAL)
             self.gui.enNoiseThres.config(state=NORMAL)
             self.gui.enRate.delete(0, END)
@@ -910,15 +840,6 @@ class ThreadedAction:
         self.isFileOpen = True
         self.ModeSelected()
 
-    # --------------------------------------------------------------------------------------
-    def openManual(self, event):
-        filePath = os.getcwd() + "\\KIT manual.txt"
-        os.popen(filePath)
-
-    # -------GPS function--------------------------------------------------------------------
-    def log_gps_datatest(self):
-        self.gui.entryLocation.delete(0, END)
-        self.gui.entryLocation.insert(END, "55.78210, 12.51834")
     # -------GPS function--------------------------------------------------------------------
     def log_gps_data(self):
         self.port='/dev/ttyACM0'
@@ -941,8 +862,6 @@ class ThreadedAction:
                             # Check for sentences that contain location data
                             if isinstance(msg, (pynmea2.types.talker.GGA, pynmea2.types.talker.RMC, pynmea2.types.talker.GLL)):
                                 # Retrieve and format the data
-                                #latitude = msg.latitude
-                                #longitude = msg.longitude
                                 latitude = round(float(msg.latitude), 5)
                                 longitude = round(float(msg.longitude), 5)
                                 timestamp = msg.timestamp
@@ -998,27 +917,19 @@ class ThreadedAction:
             if optionMode == 'COV':
                 self.gui.lampInterval.insert(0, '50')
                 self.lampIntervalset = 3000  # 50 min for real sample
-                # self.rateLimit = 10000         # update on 20220228
-                # self.noiseThreshold = 800.0
                 self.expPeriod = 50
             elif optionMode == 'Sal':
                 self.gui.lampInterval.insert(0, '50')
                 self.lampIntervalset = 3000  # 50 min for real sample
-                # self.rateLimit = 10000
-                # self.noiseThreshold = 800.0
                 self.expPeriod = 50
             elif optionMode == 'Cam':
                 self.gui.lampInterval.insert(0, '60')
                 self.lampIntervalset = 3600  # 60 min for real sample
-                # self.rateLimit = 10000
-                # self.noiseThreshold = 800.0
                 self.expPeriod = 60
             else:
                 optionMode = 'Custom'
                 mess.showinfo("Set LAMP interval", "Set the custom LAMP interval")
                 self.gui.lampInterval.insert(0, '50')
-                # self.rateLimit = 10000
-                # self.noiseThreshold = 800.0
                 self.expPeriod = 50
                 self.gui.txtDisplay.insert(END,
                                            "\n\n Running on Custom mode. Make sure that you put LAMP interval already..." +
@@ -1285,7 +1196,6 @@ class ThreadedAction:
         # Set LAMP and Fan time
         self.timeChipIn = time.time()  # The moment putting chip in
         self.lampInterval = self.lampIntervalset
-        #self.lampInterval = 600  # For test only
         self.lampInterval += self.timeChipIn - self.timeBeginReached
         self.setTimeFan = self.lampInterval + self.lastPointInterval + 30  # Cooling Fan ON after 30 second heaters off
         self.startDetect = time.time()
@@ -1295,7 +1205,6 @@ class ThreadedAction:
             self.expPeriod = 50
             if self.gui.lampInterval:
                 self.expPeriod = int(self.gui.lampInterval.get())
-                #self.expPeriod = 10  # For test only
             timing = self.expPeriod * 60 - 2
             self.resetData()
             self.initTxt()
@@ -1400,7 +1309,6 @@ class ThreadedAction:
         GPIO.output(heaterSafe, GPIO.LOW)  # Set heaterSafe OFF
         pwmt.start(0)  # Start with 0% duty cycle (off)
         pwmb.start(0)  # Start with 0% duty cycle (off)
-        # GPIO.output(FAN, GPIO.LOW)
         self.gui.btStop.config(state=DISABLED)
         self.gui.btRun.config(state=DISABLED)
         self.gui.btStart.config(state=ACTIVE)
@@ -1440,26 +1348,26 @@ class ThreadedAction:
         self.gui.txtResults.insert(END,
                                    'System ID:' + 4 * ' ' + self.gui.entrysystemID.get() + '\n' 
                                    'User name:' + 4 * ' ' + self.gui.entryusername.get() + '\n' 
-                                   'User phone:' + 4 * ' ' + self.gui.entryuserphone.get() + '\n' 
+                                   'User phone:' + 3 * ' ' + self.gui.entryuserphone.get() + '\n' 
                                    'Sample ID:' + 4 * ' ' + self.gui.entrysampleID.get() + '\n' 
-                                   'Location:' + 4 * ' ' + self.gui.entryLocation.get() + '\n')
+                                   'Location:' + 3 * ' ' + self.gui.entryLocation.get() + '\n')
 
         self.gui.txtResults.insert(END, 'System starts at: ' + self.expStartAt + '\n')
         self.gui.txtResults.insert(END, 'System stops at: ' + self.expStopAt + '\n')
-        
+
         try:
             self.gui.txtResults.insert(END, 'Date and Time of test: ' + self.tail + '\n\n')  # To get csv file date and time
         except:
             self.gui.txtResults.insert(END, 'Date and Time of test: ' + self.gui.get_datetime() + '\n')  # To get current date and time
-            
+
         self.gui.txtResults.insert(END, 'Test type: ' + self.expMode + '\n')
         self.gui.txtResults.insert(END, 'Interval: ' + str(self.expPeriod) + ' minutes\n')
-        
+
         try:
             self.gui.txtResults.insert(END, 'From data file: ' + self.tail + '\n\n')
         except:
             self.gui.txtResults.insert(END, 'Direct from device... \n\n')
-        
+
         gap1 = 3 * ' '
         gap2 = 6 * ' '
 
@@ -1481,7 +1389,6 @@ class ThreadedAction:
                 self.gui.txtResults.insert(END, 'Sample ' + well_name[i] + ' is negative' + '\n')
 
             # --------------------------------------------------------------------------------------
-
     def initTxt(self):
         self.gui.txtDisplay.delete('1.0', END)
         self.gui.txtDisplay.insert(END,
@@ -1489,7 +1396,7 @@ class ThreadedAction:
                                    	'User name:' + 4 * ' ' + self.gui.entryusername.get() + '\n' 
 									'User phone:' + 3 * ' ' + self.gui.entryuserphone.get() + '\n' 
 									'Sample ID:' + 4 * ' ' + self.gui.entrysampleID.get() + '\n' 
-									'Location:' + 5 * ' ' + self.gui.entryLocation.get() + '\n')
+									'Location:' + 3 * ' ' + self.gui.entryLocation.get() + '\n')
 
         self.oldtime = time.time()
         self.startSysTime = self.gui.get_datetime()
@@ -1593,6 +1500,7 @@ class ThreadedAction:
         plt.plot(timestampsstop, temperaturesTstop, label='Top heater', color='b', linestyle="--")
         plt.plot(timestampsstop, temperaturesBstop, label='Bottom heater', color='g', linestyle="-.")
         plt.legend()
+
     # --------------------------------------------------------------------------------------
     def make_fig_intensity(self):
         plt.clf()
@@ -1652,7 +1560,6 @@ class ThreadedAction:
     # make fig all using matbackend
     def make_fig_abs_der(self):
         fig = Figure(figsize=(11, 5))
-        # root.title('POC-LAMP' + '>> ' + self.pickedFilename)
         frame_graph = Frame(Toplevel())
         plot_canvas = FigureCanvasTkAgg(fig, master=frame_graph)
         plot_canvas.draw()
@@ -1660,7 +1567,6 @@ class ThreadedAction:
         toolbar = NavigationToolbar2Tk(plot_canvas, frame_graph)
         toolbar.update()
         plot_canvas._tkcanvas.pack(side=TOP, fill=BOTH, expand=1)
-        # label = Label(frame_graph, text=self.).pack(side=TOP, fill=BOTH, expand=1)
         frame_graph.pack()
 
         abs_plots = fig.add_subplot(121)
@@ -1698,7 +1604,6 @@ class ThreadedAction:
         abs_plots.plot(timestampsAb, ab10, label='2D', color='r')
         abs_plots.plot(timestampsAb, ab11, label='3D', color='c')
         abs_plots.plot(timestampsAb, ab12, label='4D', color='m')
-
         abs_plots.legend()
         der_plots.legend()
 
@@ -1813,14 +1718,12 @@ class ThreadedAction:
 
             # Add a blank row (optional) to separate metadata from the header
             writer.writerow([])
-            
+
             # Write the header row
-            writer.writerow(header)  
-            
+            writer.writerow(header)
+
             # Write all datalines
             writer.writerows(self.datalines)
-
-        #print(f"Data saved to {filename}.")
 
     # ------Save to excel file-----------------------------------------------------
     def write_to_file(self):
@@ -2110,12 +2013,12 @@ class ThreadedAction:
                     line_count = 0
                     temp = []
                     for row in csv_reader:
-                        if line_count <= 6:
-                            if len(row) == 1:
-                                temp.append(row[0])
+                        if line_count <= 10:
+                            if len(row) == 2:
+                                temp.append(row[1])
                             line_count += 1
                         else:
-                            if (len(row) > 4) and (round(float(row[0]) / 60.0, 2) <= self.expPeriodCut):
+                            if (len(row) > 9) and (round(float(row[0]) / 60.0, 2) <= self.expPeriodCut):
                                 timestamps.append(round(float(row[0]) / 60.0, 2))
                                 temperatures.append(float(row[1]))  # temperature
                                 data1.append(float(row[3]))  # well
@@ -2136,21 +2039,20 @@ class ThreadedAction:
                                      data5[-1], data6[-1], data7[-1], \
                                      data8[-1], data9[-1], data10[-1], data11[-1], data12[-1]))
                                 data.append(line)
-                    #self.expStartAt = str(temp[0][22:])
-                    self.expPeriod = temp[1][20:23]
-                    #self.expMode = str(temp[1][39:])
-                    #self.expSampleID = str(temp[2][11:])
-
-                    # For test only----------
-                    #'System ID:' + self.gui.entrysystemID.get()
-                    #'User name:' + self.gui.entryusername.get()
-                    #'User phone:' + self.gui.entryuserphone.get()
-                    self.expSampleID = self.gui.entrysampleID.get()
-                    #'Location:' + self.gui.entryLocation.get()
-                    #self.expStartAt = self.gui.get_datetime()
-                    self.expMode = self.expMode
-                    #'Interval: ' + str(self.expPeriod)
-                    # End test data ------------------
+                    self.expStartAt = str(temp[5])
+                    self.expPeriod = temp[7]
+                    self.expMode = str(temp[6])
+                    self.expSampleID = str(temp[3])
+                    self.gui.entrysystemID.delete(0, END)
+                    self.gui.entrysystemID.insert(END, str(temp[0]))
+                    self.gui.entryusername.delete(0, END)
+                    self.gui.entryusername.insert(END, str(temp[1]))
+                    self.gui.entryuserphone.delete(0, END)
+                    self.gui.entryuserphone.insert(END, str(temp[2]))
+                    self.gui.entrysampleID.delete(0, END)
+                    self.gui.entrysampleID.insert(END, str(temp[3]))
+                    self.gui.entryLocation.delete(0, END)
+                    self.gui.entryLocation.insert(END, str(temp[4]))
 
                 for i in range(len(timestamps)):
                     if index == 0:
@@ -2225,13 +2127,13 @@ class ThreadedAction:
                     line_count = 0
                     temp = []
                     for row in csv_reader:
-                        if line_count <= 6:
-                            if len(row) == 1:
-                                temp.append(row[0])
+                        if line_count <= 10:
+                            if len(row) == 2:
+                                temp.append(row[1])
                             line_count += 1
 
-                    self.expPeriod = temp[1][20:23]
-                    self.expMode = str(temp[1][39:])
+                    self.expPeriod = temp[7]
+                    self.expMode = str(temp[6])
 
                     if self.expMode != 'COV' and self.expMode != 'Sal' and self.expMode != 'Cam':
                         self.gui.OpenOpMenu.config(state=ACTIVE)
@@ -2335,12 +2237,9 @@ class ThreadedAction:
 
             # calculate derivation of mean signals
             for i in range(0, len(gruppe1) - 1):
-                # for i in range(1, len(gruppe1)-1):
-                # preId = i-1
                 preId = i
                 lastId = i + 1
                 timestampsDer.append(timestampsG[i])
-                # deltaTime = timestampsG[lastId] - timestampsG[preId]
                 deltaTime = 1.0  # for average sampling point at 30
                 der1.append(abs(gruppe1[lastId] - gruppe1[preId]) / deltaTime)
                 der2.append(abs(gruppe2[lastId] - gruppe2[preId]) / deltaTime)
