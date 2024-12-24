@@ -1,0 +1,20 @@
+# Poc_Lamp
+cd ~/SC
+source venv/bin/activate
+
+sudo lsof -i:8765
+
+cd ~/SC/poc-lamp/
+source venv/bin/activate
+export PYTHONPATH=~/SC/poc-lamp/
+
+ python3 scripts/build.py
+ python3 src/off_chain/poc_deploy_dual.py wallet1 owner1
+
+
+ python3 src/off_chain/mint_nft.py owner1 NFTxxx
+
+ python3 src/off_chain/mint_nft_datum.py owner1 NFTxxx
+ python3 src/off_chain/update_datum.py owner1 
+
+ python3 src/off_chain/reFunc.py owner1 
