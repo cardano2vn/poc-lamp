@@ -53,9 +53,21 @@ Go to the directory without smart contract
 ```
 cd /xxx/poc-lamp/IoT-Blockchain
 ```
-Run the environment
+
+Create environment
 
 ```
+python3 -m venv venv
+pip install pycardano
+pip install opshin
+```
+
+
+Run the environment
+
+
+```
+
 source venv/bin/activate
 ```
 
