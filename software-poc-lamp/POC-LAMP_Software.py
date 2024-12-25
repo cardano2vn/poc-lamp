@@ -1,5 +1,5 @@
-
-#POC-LAMP-Chip Raspberry Pi 4B_20241101
+#POC-LAMP-Chip Raspberry Pi 4B_20241218
+# Update Base line threshold at 2800 (rateLimit = 2800); Derivative at 160 (noiseThreshold = 160)
 
 import os, sys
 if sys.version_info[0] == 3:
@@ -556,8 +556,8 @@ class ThreadedAction:
         self.lampIntervalset = 4200  # 70 min for real sample
         self.lastPointInterval = 300  # 5 min
         self.setTimeFan = self.lampInterval + self.lastPointInterval + 30  # Cooling Fan ON after 30 second heaters off
-        self.rateLimit = 8000
-        self.noiseThreshold = 350.0
+        self.rateLimit = 2800
+        self.noiseThreshold = 160
 
         self.isStart = False
         self.isFinishLAMP = False
@@ -592,7 +592,7 @@ class ThreadedAction:
                      pocs11, pocs11result,
                      pocs12, pocs12result,
                      ):
-        uri = "ws://cardano2vn.duckdns.org:8765"
+        uri = "ws://172.0.0.1:8765"
         async with websockets.connect(uri) as websocket:
             # Tạo metadata dạng JSON
             metadata = {
@@ -822,8 +822,8 @@ class ThreadedAction:
             self.gui.enNoiseThres.delete(0, END)
             self.gui.lampInterval.delete(0, END)
             self.gui.lampInterval.insert(0, '50')
-            self.gui.enRate.insert(END, "8000")
-            self.gui.enNoiseThres.insert(END, "350")
+            self.gui.enRate.insert(END, "2800")
+            self.gui.enNoiseThres.insert(END, "160")
         else:
             self.gui.enRate.config(state=DISABLED)
             self.gui.enNoiseThres.config(state=DISABLED)
@@ -2268,18 +2268,18 @@ class ThreadedAction:
         else:
 
             if self.expMode == 'COV':
-                self.rateLimit = 8000
-                self.noiseThreshold = 350.0
+                self.rateLimit = 2800
+                self.noiseThreshold = 160
             elif self.expMode == 'Sal':
-                self.rateLimit = 8000
-                self.noiseThreshold = 350.0
+                self.rateLimit = 2800
+                self.noiseThreshold = 160
             elif self.expMode == 'Cam':
-                self.rateLimit = 8000
-                self.noiseThreshold = 350.0
+                self.rateLimit = 2800
+                self.noiseThreshold = 160
             else:
                 self.expMode = 'Custom'
-                self.rateLimit = 8000
-                self.noiseThreshold = 350.0
+                self.rateLimit = 2800
+                self.noiseThreshold = 160
 
         self.maxDer.extend((np.max(der1), np.max(der2), np.max(der3), np.max(der4), np.max(der5), np.max(der6), \
                        np.max(der7), np.max(der8), np.max(der9), np.max(der10), np.max(der11), np.max(der12)))

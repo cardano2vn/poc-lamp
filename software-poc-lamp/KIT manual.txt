@@ -1,8 +1,8 @@
-Reaction teperature set for Sam, Camp: 67 degC and COV: 66 degC;
-Chip postion error <100;  
+Reaction temperature set for Sam, Camp: 67 degC and COV: 66 degC;
+Chip position error <100;  
 Reaction time set for COV, Sal: 50 min and Camp: 60 min;
 Start calculation time at 5 min;
-Base line at 10000 (rateLimit = 10000); Derivative at 800 (noiseThreshold = 800);
+Base line threshold at 2800 (rateLimit = 2800); Derivative at 160 (noiseThreshold = 160);
 
 Software define:
  WELL 1A, WELL 1B, WELL 2A, WELL 2B, WELL 3A, WELL 4A, WELL 1C, WELL 1D,  WELL 2C, WELL 2D, WELL 3D, WELL 4D
